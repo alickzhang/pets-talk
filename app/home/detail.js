@@ -10,7 +10,8 @@ import {
   ListView,
   TextInput,
   Modal,
-  AlertIOS
+  AlertIOS,
+  ProgressViewIOS
 } from 'react-native'
 import Video from 'react-native-video'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -366,9 +367,11 @@ class Detail extends Component {
             : null
           }
 
-          <View style={styles.progressBox}>
-            <View style={[styles.progressBar, {width: width * this.state.videoProgress}]}></View>
-          </View>
+          <ProgressViewIOS
+            progress={this.state.videoProgress}
+            trackTintColor='#ccc'
+            progressTintColor='#ff6666'
+          />
         </View>
 
         <ListView
@@ -487,17 +490,6 @@ const styles = StyleSheet.create({
     width: width,
     alignSelf: 'center',
     backgroundColor: 'transparent'
-  },
-
-  progressBox: {
-    width: width,
-    height: 2,
-    backgroundColor: '#ccc'
-  },
-
-  progressBar: {
-    height: 2,
-    backgroundColor: '#ff6666'
   },
 
   play: {
