@@ -11,23 +11,66 @@ import {
   Text,
   View,
   TabBarIOS,
-  Navigator
+  Navigator,
+  AsyncStorage
 } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import Home from './app/home/index'
 import Edit from './app/edit/index'
 import Account from './app/account/index'
+import Login from './app/account/login'
 
 export default class myApp extends Component {
   constructor() {
     super()
     this.state = {
-      selectedTab: 'list'
+      selectedTab: 'list',
+      user: null,
+      logined: false
     }
   }
 
+  componentDidMount() {
+    this._asyncAppStatus()
+  }
+
+  _asyncAppStatus() {
+    AsyncStorage.getItem('user').then(data => {
+      debugger
+      let user = null
+      let newState = {}
+
+      if (data) {
+        user = JSON.parse(data)
+      }
+
+      if (user && user.accessToken) {
+        newState.user = user
+        newState.logined = true
+      } else {
+        newState.logined = false
+      }
+
+      this.setState(newState)
+    })
+  }
+
+  _afterLogin(user) {
+    user = JSON.stringify(user)
+    AsyncStorage.setItem('user', user).then(() => {
+      this.setState({
+        logined: true,
+        user: user
+      })
+    })
+  }
+
   render() {
+    if (!this.state.logined) {
+      return <Login afterLogin={this._afterLogin.bind(this)} />
+    }
+
     return (
       <TabBarIOS
         unselectedTintColor="white"
@@ -70,16 +113,16 @@ export default class myApp extends Component {
           <Edit />
         </Icon.TabBarItemIOS>
         <Icon.TabBarItemIOS
-          title="More"
+          title="Account"
           iconName='ios-more-outline'
           selectedIconName='ios-more'
-          selected={this.state.selectedTab === 'more'}
+          selected={this.state.selectedTab === 'account'}
           onPress={() => {
             this.setState({
-              selectedTab: 'more',
+              selectedTab: 'account',
             })
           }}>
-          <Account />
+          <Login />
         </Icon.TabBarItemIOS>
       </TabBarIOS>
     )

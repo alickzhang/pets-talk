@@ -12,8 +12,10 @@ export default {
   api: {
     base: 'http://rap.taobao.org/mockjs/9286/',
     comment: 'api/comments',
-    home: 'api/videos',
-    like: 'api/like'
+    like: 'api/like',
+    signup: 'api/u/signup',
+    verify: 'api/u/verify',
+    video: 'api/videos',
   },
 
   msg: {

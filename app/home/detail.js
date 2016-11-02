@@ -500,7 +500,6 @@ const styles = StyleSheet.create({
     height: 60,
     paddingTop: 3,
     paddingLeft: 5,
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
@@ -521,7 +520,7 @@ const styles = StyleSheet.create({
   infoBox: {
     width: width,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginTop: 10
   },
 
@@ -630,14 +629,11 @@ const styles = StyleSheet.create({
 
   submitBtn: {
     width: width - 20,
-    padding: 16,
-    marginTop: 20,
-    marginBottom: 20,
+    padding: 10,
     borderWidth: 1,
     borderColor: '#ff6666',
     borderRadius: 4,
     color: '#ff6666',
-    fontSize: 18,
     alignSelf: 'center'
   }
 })

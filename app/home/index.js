@@ -133,7 +133,7 @@ class Home extends Component {
       })
     }
 
-    request.get(config.api.base + config.api.home, {
+    request.get(config.api.base + config.api.video, {
       accessToken: 'abcd',
       page: page
     })

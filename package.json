@@ -7,11 +7,13 @@
     "test": "jest"
   },
   "dependencies": {
+    "immutability-helper": "^2.0.0",
     "lodash": "^4.16.4",
     "query-string": "^4.2.3",
     "react": "15.3.2",
     "react-native": "0.35.0",
     "react-native-button": "^1.7.1",
+    "react-native-sk-countdown": "^1.0.1",
     "react-native-vector-icons": "^2.1.0",
     "react-native-video": "^0.9.0"
   },
