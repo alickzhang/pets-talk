@@ -153,7 +153,9 @@ class Detail extends Component {
             placeholder='Please leave your comment...'
             style={styles.commentInputContent}
             multiline={true}
-            onFocus={this._focus.bind(this)}
+            onFocus={() => {
+              this._setModalVisible(!this.state.modalVisible)
+            }}
           />
         </View>
         <View style={styles.commentArea}>
@@ -222,7 +224,7 @@ class Detail extends Component {
     if (!this._hasMore() && cachedData.total !== 0) {
       return (
         <View style={styles.loadingMore}>
-          <Text style={styles.loadingText}>No more videos</Text>
+          <Text style={styles.loadingText}>No more comments</Text>
         </View>
       )
     }
@@ -231,19 +233,11 @@ class Detail extends Component {
     }
     return <ActivityIndicator style={styles.loadingMore} />
   }
-
-  _focus() {
-    this._setModalVisible(true)
-  }
-
+  
   _setModalVisible(isVisible) {
     this.setState({
       modalVisible: isVisible
     })
-  }
-
-  _closeModal() {
-    this._setModalVisible(false)
   }
 
   _submitComment() {
@@ -340,8 +334,8 @@ class Detail extends Component {
           }
 
           {
-            this.state.videoLoaded && !this.state.playing ?
-            <TouchableOpacity style={styles.play} onPress={this._replay.bind(this)}>
+            this.state.videoLoaded && !this.state.playing
+            ? <TouchableOpacity style={styles.play} onPress={this._replay.bind(this)}>
               <Icon
                 name='ios-play'
                 size={40}
@@ -351,11 +345,11 @@ class Detail extends Component {
           }
 
           {
-            this.state.videoLoaded && this.state.playing ?
-            <TouchableOpacity style={styles.pause} onPress={this._pause.bind(this)}>
+            this.state.videoLoaded && this.state.playing
+            ? <TouchableOpacity style={styles.pause} onPress={this._pause.bind(this)}>
               {
-                this.state.paused ?
-                <TouchableOpacity style={styles.play} onPress={this._resume.bind(this)}>
+                this.state.paused
+                ? <TouchableOpacity style={styles.play} onPress={this._resume.bind(this)}>
                   <Icon
                     name='ios-play'
                     size={40}
@@ -388,11 +382,12 @@ class Detail extends Component {
 
         <Modal
           animationType={this.state.animationType}
-          visible={this.state.modalVisible}
-          onRequestClose={() => this._setModalVisible(false)}>
+          visible={this.state.modalVisible}>
           <View style={styles.modalContainer}>
             <Icon
-              onPress={this._closeModal.bind(this)}
+              onPress={() => {
+                this._setModalVisible(!this.state.modalVisible)
+              }}
               name='ios-close-outline'
               style={styles.closeIcon} />
             <View style={styles.commentInputBox}>
@@ -424,13 +419,12 @@ const styles = StyleSheet.create({
 
   header: {
     width: width,
+    height: 56,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 25,
     paddingBottom: 12,
-    paddingLeft: 10,
-    paddingRight: 10,
     backgroundColor: '#ff6666'
   },
 
@@ -443,22 +437,26 @@ const styles = StyleSheet.create({
 
   headerLeft: {
     width: 50,
+    marginLeft: 10,
     flexDirection: 'row',
     alignItems: 'center'
   },
 
   headerRight: {
-    width: 50
+    width: 50,
+    marginRight: 10
   },
 
   backIcon: {
     color: '#fff',
     fontSize: 20,
+    fontWeight: '600',
     marginRight: 5
   },
 
   backText: {
-    color: '#fff'
+    color: '#fff',
+    fontWeight: '600'
   },
 
   videoBox: {

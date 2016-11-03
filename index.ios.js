@@ -37,7 +37,6 @@ export default class myApp extends Component {
 
   _asyncAppStatus() {
     AsyncStorage.getItem('user').then(data => {
-      debugger
       let user = null
       let newState = {}
 
@@ -63,6 +62,14 @@ export default class myApp extends Component {
         logined: true,
         user: user
       })
+    })
+  }
+
+  _logout() {
+    AsyncStorage.removeItem('user')
+    this.setState({
+      logined: false,
+      user: null
     })
   }
 
@@ -122,7 +129,7 @@ export default class myApp extends Component {
               selectedTab: 'account',
             })
           }}>
-          <Login />
+          <Account user={this.state.user} logout={this._logout.bind(this)}/>
         </Icon.TabBarItemIOS>
       </TabBarIOS>
     )
