@@ -127,7 +127,7 @@ class Login extends Component {
                   style={styles.countBtn}
                   countType='seconds'
                   auto={true}
-                  afterEnd={() => {this._countingDown.bind(this)}}
+                  afterEnd={this._countingDown.bind(this)}
                   timeLeft={10}
                   step={-1}
                   startText='Send'

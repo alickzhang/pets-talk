@@ -25,7 +25,7 @@ export default class myApp extends Component {
   constructor() {
     super()
     this.state = {
-      selectedTab: 'list',
+      selectedTab: 'edit',
       user: null,
       logined: false
     }
@@ -102,7 +102,7 @@ export default class myApp extends Component {
               return Navigator.SceneConfigs.FloatFromRight
             }}
             renderScene={(route, navigator) => {
-              let Component = route.component
+              const Component = route.component
               return <Component {...route.params} navigator={navigator} />
             }}
           />

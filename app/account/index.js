@@ -14,7 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import ImagePicker from 'react-native-image-picker'
 import sha1 from 'sha1'
-import * as Progress from 'react-native-progress'
+import { Circle } from 'react-native-progress'
 import Button from 'react-native-button'
 
 import config from '../common/config'
@@ -35,16 +35,6 @@ const photoOptions = {
   }
 }
 
-const CLOUDINARY = {
-  cloud_name: 'alick',
-  api_key: '544875394991159',
-  api_secret: 'FskL--QHh47Ljvkgn8bCTORhAC0',
-  base: 'http://res.cloudinary.com/alick',
-  image: 'https://api.cloudinary.com/v1_1/alick/image/upload',
-  video: 'https://api.cloudinary.com/v1_1/alick/video/upload',
-  file: 'https://api.cloudinary.com/v1_1/alick/raw/upload'
-}
-
 avatar = (id, type) => {
   if (!id) {
     return
@@ -58,7 +48,7 @@ avatar = (id, type) => {
     return id
   }
 
-  return CLOUDINARY.base + '/' + type + '/upload/' + id
+  return config.cloudinary.base + '/' + type + '/upload/' + id
 }
 
 class Account extends Component {
@@ -104,31 +94,26 @@ class Account extends Component {
         return
       }
 
-      const { user } = this.state
+      const { accessToken } = this.state.user
       const avatarData = 'data:image/jpeg;base64,' + res.data
-      const timestamp = Date.now()
-      const tags = 'app.avatar'
+      const type = 'avatar'
       const folder = 'avatar'
+      const tags = 'app.avatar'
       const signatureUrl = config.api.base + config.api.signature
 
       request.post(signatureUrl, {
-        accessToken: user.accessToken,
-        timestamp: timestamp,
-        folder: folder,
-        tags: tags,
-        type: 'avatar'
+        accessToken: accessToken,
+        type: type
       })
       .then(data => {
         if (data && data.success) {
-          const signature = 'folder=' + folder + '&tags=' + tags + '&timestamp=' + timestamp + CLOUDINARY.api_secret
-          signature = sha1(signature)
-
+          const { signature, timestamp } = data.data
           const body = new FormData()
           body.append('folder', folder)
           body.append('signature', signature)
           body.append('tags', tags)
           body.append('timestamp', timestamp)
-          body.append('api_key', CLOUDINARY.api_key)
+          body.append('api_key', config.cloudinary.api_key)
           body.append('resource_type', 'image')
           body.append('file', avatarData)
 
@@ -143,7 +128,7 @@ class Account extends Component {
 
   _uploadAvatar(body) {
     const xhr = new XMLHttpRequest()
-    const url = CLOUDINARY.image
+    const url = config.cloudinary.image
 
     this.setState({
       avatarUploading: true,
@@ -260,7 +245,7 @@ class Account extends Component {
           <TouchableOpacity style={styles.avatarBox} onPress={this._pickPhoto.bind(this)}>
             {
               this.state.avatarUploading
-              ? <Progress.Circle
+              ? <Circle
                 size={width * 0.2}
                 showsText={true}
                 color={'#ff6666'}
