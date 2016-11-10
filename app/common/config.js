@@ -19,7 +19,8 @@ export default {
     update: 'api/u/update',
     verify: 'api/u/verify',
     video: 'api/videos',
-    videoUpload: 'api/videos/video_upload'
+    videoUpload: 'api/videos/video_upload',
+    audioUpload: 'api/videos/audio_upload'
   },
 
   cloudinary: {
@@ -28,11 +29,7 @@ export default {
     base: 'http://res.cloudinary.com/alick',
     image: 'https://api.cloudinary.com/v1_1/alick/image/upload',
     video: 'https://api.cloudinary.com/v1_1/alick/video/upload',
-    file: 'https://api.cloudinary.com/v1_1/alick/raw/upload'
-  },
-
-  qiniu: {
-    upload: 'http://upload.qiniu.com'
+    audio: 'https://api.cloudinary.com/v1_1/alick/raw/upload'
   },
 
   images: {

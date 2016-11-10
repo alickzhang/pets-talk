@@ -98,7 +98,7 @@ class Account extends Component {
       const avatarData = 'data:image/jpeg;base64,' + res.data
       const type = 'avatar'
       const folder = 'avatar'
-      const tags = 'app.avatar'
+      const tags = 'app,avatar'
       const signatureUrl = config.api.base + config.api.signature
 
       request.post(signatureUrl, {
@@ -122,6 +122,7 @@ class Account extends Component {
       })
       .catch(error => {
         console.error(error)
+        AlertIOS.alert('Network error.')
       })
     })
   }

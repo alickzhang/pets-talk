@@ -74,11 +74,9 @@ class Detail extends Component {
     }
   }
 
-  _onLoadStart() {
-  }
+  _onLoadStart() {}
 
-  _onLoad() {
-  }
+  _onLoad() {}
 
   _onProgress(data) {
     const duration = data.playableDuration
