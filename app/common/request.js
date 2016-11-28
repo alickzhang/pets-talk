@@ -17,7 +17,8 @@ request.get = async function(url, params) {
   try {
     const response = await fetch(url)
     const responseJson = await response.json()
-    return Mock.mock(responseJson)
+    return responseJson
+    // return Mock.mock(responseJson)
   } catch(error) {
     console.error(error)
   }

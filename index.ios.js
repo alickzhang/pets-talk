@@ -25,7 +25,7 @@ export default class myApp extends Component {
   constructor() {
     super()
     this.state = {
-      selectedTab: 'edit',
+      selectedTab: 'list',
       user: null,
       logined: false
     }

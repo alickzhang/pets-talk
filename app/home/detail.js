@@ -11,7 +11,8 @@ import {
   TextInput,
   Modal,
   AlertIOS,
-  ProgressViewIOS
+  ProgressViewIOS,
+  AsyncStorage
 } from 'react-native'
 import Video from 'react-native-video'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -19,6 +20,7 @@ import Button from 'react-native-button'
 
 import config from '../common/config'
 import request from '../common/request'
+import { avatar } from '../common/util'
 
 const width = Dimensions.get('window').width
 const height = width * 0.6
@@ -65,6 +67,28 @@ class Detail extends Component {
       modalVisible: false,
       isSending: false
     }
+  }
+
+  componentDidMount() {
+    this._asyncAppStatus()
+  }
+
+  _asyncAppStatus() {
+    AsyncStorage.getItem('user').then(data => {
+      let user = null
+
+      if (data) {
+        user = JSON.parse(data)
+      }
+
+      if (user && user.accessToken) {
+        this.setState({
+          user: user
+        }, () => {
+          this._fetchData()
+        })
+      }
+    })
   }
 
   _backToHome() {
@@ -131,16 +155,12 @@ class Detail extends Component {
     }
   }
 
-  componentDidMount() {
-    this._fetchData()
-  }
-
   _renderHeader() {
     const { data } = this.state
     return (
       <View style={styles.listHeader}>
         <View style={styles.infoBox}>
-          <Image style={styles.avatar} source={{uri: data.author.avatar}} />
+          <Image style={styles.avatar} source={{uri: avatar(data.author.avatar)}} />
           <View style={styles.descBox}>
             <Text style={styles.nickname}>{data.author.nickname}</Text>
             <Text style={styles.title}>{data.title}</Text>
@@ -166,9 +186,9 @@ class Detail extends Component {
   _renderRow(row) {
     return (
       <View key={row._id} style={styles.commentBox}>
-        <Image style={styles.commentatorAvatar} source={{uri: row.commentator.avatar}} />
+        <Image style={styles.commentatorAvatar} source={{uri: avatar(row.commentFrom.avatar)}} />
         <View style={styles.comment}>
-          <Text style={styles.commentatorNickname}>{row.commentator.nickname}</Text>
+          <Text style={styles.commentatorNickname}>{row.commentFrom.nickname}</Text>
           <Text style={styles.commentContent}>{row.content}</Text>
         </View>
       </View>
@@ -181,21 +201,24 @@ class Detail extends Component {
     })
 
     request.get(config.api.base + config.api.comment, {
-      id: 123,
-      accessToken: 'abcd',
+      accessToken: this.state.user.accessToken,
+      id: this.state.data._id,
       page: page
     })
     .then(data => {
       if (data && data.success) {
-        let items = cachedData.items.slice()
-        items = items.concat(data.data)
-        cachedData.nextPage += 1
-        cachedData.items = items
-        cachedData.total = data.total
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(cachedData.items),
-          isLoading: false
-        })
+        console.log(data)
+        if (data.data.length > 0) {
+          let items = cachedData.items.slice()
+          items = items.concat(data.data)
+          cachedData.nextPage += 1
+          cachedData.items = items
+          cachedData.total = data.total
+          this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(cachedData.items),
+            isLoading: false
+          })
+        }
       }
     })
     .catch(error => {
@@ -252,23 +275,20 @@ class Detail extends Component {
     }, () => {
       const url = config.api.base + config.api.comment
       const body = {
-        accessToken: 'abc',
-        video: '12345',
-        content: this.state.content
+        accessToken: this.state.user.accessToken,
+        comment: {
+          video: this.state.data._id,
+          content: this.state.content
+        }
       }
 
       request.post(url, body).then(data => {
         if (data && data.success) {
+          console.log(data)
           let items = cachedData.items.slice()
           const { content } = this.state
 
-          items = [{
-            content: content,
-            commentator: {
-              avatar: 'http://dummyimage.com/640x6400/e03624)',
-              nickname: 'Alick Zhang'
-            }
-          }].concat(items)
+          items = data.data.concat(items)
 
           cachedData.items = items
           cachedData.total += 1
@@ -307,7 +327,7 @@ class Detail extends Component {
         <View style={styles.videoBox}>
           <Video
             ref='videoPlayer'
-            source={{uri: data.video}}
+            source={{uri: data.cloudinary_video}}
             style={styles.video}
             volume={1}
             paused={this.state.paused}

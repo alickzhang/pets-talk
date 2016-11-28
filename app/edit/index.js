@@ -256,7 +256,6 @@ class Edit extends Component {
       }
 
       if (response) {
-        console.log(response)
         let state = {}
         state[type] = response
         state[type + 'Uploaded'] = true

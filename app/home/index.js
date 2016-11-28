@@ -9,7 +9,8 @@ import {
   Dimensions,
   ActivityIndicator,
   RefreshControl,
-  AlertIOS
+  AlertIOS,
+  AsyncStorage
 } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 
@@ -42,7 +43,7 @@ class Item extends Component {
     const body = {
       id: row._id,
       like: like ? true : false,
-      accessToken: 'abcd'
+      accessToken: this.props.user.accessToken
     }
 
     request.post(url, body).then(data => {
@@ -113,13 +114,32 @@ class Home extends Component {
       <Item
         key={row._id}
         row={row}
+        user={this.state.user}
         onSelect={() => this._loadPage(row)}
       />
     )
   }
 
   componentDidMount() {
-    this._fetchData(1)
+    this._asyncAppStatus()
+  }
+
+  _asyncAppStatus() {
+    AsyncStorage.getItem('user').then(data => {
+      let user = null
+
+      if (data) {
+        user = JSON.parse(data)
+      }
+
+      if (user && user.accessToken) {
+        this.setState({
+          user: user
+        }, () => {
+          this._fetchData(1)
+        })
+      }
+    })
   }
 
   _fetchData(page) {
@@ -133,33 +153,48 @@ class Home extends Component {
       })
     }
 
+    const { user } = this.state
+
     request.get(config.api.base + config.api.video, {
-      accessToken: 'abcd',
+      accessToken: user.accessToken,
       page: page
     })
     .then(data => {
       if (data && data.success) {
-        let items = cachedData.items.slice()
+        if (data.data.length > 0) {
 
-        if (page !== 0) {
-          items = items.concat(data.data)
-          cachedData.nextPage += 1
-        } else {
-          items = data.data.concat(items)
-        }
-        cachedData.items = items
-        cachedData.total = data.total
+          data.data.map((item) => {
+            const votes = item.votes || []
+            if (votes.indexOf(user._id) > -1) {
+              item.like = true
+            } else {
+              item.like = false
+            }
+            return item
+          })
 
-        if (page !== 0) {
-          this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(cachedData.items),
-            isLoading: false
-          })
-        } else {
-          this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(cachedData.items),
-            isRefreshing: false
-          })
+          let items = cachedData.items.slice()
+
+          if (page !== 0) {
+            items = items.concat(data.data)
+            cachedData.nextPage += 1
+          } else {
+            items = data.data.concat(items)
+          }
+          cachedData.items = items
+          cachedData.total = data.total
+
+          if (page !== 0) {
+            this.setState({
+              dataSource: this.state.dataSource.cloneWithRows(cachedData.items),
+              isLoading: false
+            })
+          } else {
+            this.setState({
+              dataSource: this.state.dataSource.cloneWithRows(cachedData.items),
+              isRefreshing: false
+            })
+          }
         }
       }
     })
@@ -246,7 +281,7 @@ class Home extends Component {
           }
           enableEmptySections={true}
           showsVerticalScrollIndicator={false}
-          automaticallyAdjustContentInsets={true}
+          automaticallyAdjustContentInsets={false}
         />
       </View>
     )

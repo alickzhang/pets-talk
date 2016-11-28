@@ -11,7 +11,7 @@ export default {
 
   api: {
     // base: 'http://rap.taobao.org/mockjs/9286/',
-    base: 'http://192.168.1.109:1234/',
+    base: 'http://192.168.1.106:1234/',
     comment: 'api/comments',
     like: 'api/like',
     signature: 'api/signature',
